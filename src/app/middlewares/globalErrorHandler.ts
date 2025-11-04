@@ -54,9 +54,9 @@ const globalErrorHandler = (
     statusCode = httpStatus.BAD_REQUEST
   }
 
-  if (err.message === "Password is incorrect") {
-    throw new apiError(httpStatus.BAD_REQUEST, "Passowrd is incorrect")
-  }
+  // if (err.message === "Password is incorrect") {
+  //   throw new apiError(httpStatus.BAD_REQUEST, "Passowrd is incorrect")
+  // }
 
 if(err instanceof ZodError){
   
