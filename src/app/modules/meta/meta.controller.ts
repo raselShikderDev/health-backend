@@ -16,7 +16,7 @@ const fetchDashboardMetaData = catchAsync(
         sendResponse(res, {
             statusCode: httpStatus.OK,
             success: true,
-            message: "Password Changed successfully",
+            message: "Meta data successfully retrived",
             data: result,
         });
     }

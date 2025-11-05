@@ -90,7 +90,7 @@ const createAppointment = async (
         paymentId: paymentData.id,
       },
       success_url: `https://www.programming-hero.com/`,
-      cancel_url: `https://next.programming-hero.com/`,
+      cancel_url: `https://google.com/`,
     });
     console.log(session);
 

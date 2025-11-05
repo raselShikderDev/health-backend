@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import { paymentController } from "./app/modules/payment/payment.controller";
 import cron from "node-cron";
 import { appointmentService } from "./app/modules/appoinments/appoinments.service";
+import envVars from "./config/envVars";
 
 const app: Application = express();
 
@@ -18,7 +19,7 @@ app.post(
 
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: envVars.FRONTEND_URL as string, // Working well
     credentials: true,
   })
 );

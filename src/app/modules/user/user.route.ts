@@ -13,7 +13,7 @@ const router = Router();
 // Getting all users
 router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR), usercontroller.getAllFromDB)
 
-router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT), usercontroller.getMyProfile)
+router.get("/my-profile", authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT), usercontroller.getMyProfile)
 
 router.patch(
     "/update-my-profile",
@@ -44,7 +44,7 @@ router.post(
 router.post(
   "/create-doctor",
   fileUploader.upload.single("file"),
-  authValidation(UserRole.ADMIN),
+  // authValidation(UserRole.ADMIN),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body?.data) {
       req.body = userValidation.createDoctorValidationSchema.parse(
