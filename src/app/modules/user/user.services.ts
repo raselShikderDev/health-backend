@@ -54,7 +54,6 @@ const createPatient = async (req: Request) => {
   //     },
   //     "password": "Rasel70#@"
   // }
-
   return result;
 };
 
