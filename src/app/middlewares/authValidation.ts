@@ -15,7 +15,7 @@ export const authValidation = (...roles: string[]) => {
       console.log("token", token);
 
       if (!token) {
-        throw new apiError(httpStatus.UNAUTHORIZED, " You are authorized");
+        throw new apiError(httpStatus.UNAUTHORIZED, " You are not authorized");
       }
       const verifiedToken = jwtHelper.verifyToken(
         token,
