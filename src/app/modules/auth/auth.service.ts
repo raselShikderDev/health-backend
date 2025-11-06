@@ -82,7 +82,7 @@ const changePassword = async (user: IJWTPayload, payload: any) => {
         throw new Error("Password incorrect!")
     }
 
-    const hashedPassword: string = await bcrypt.hash(payload.newPassword, 5);
+    const hashedPassword: string = await bcrypt.hash(payload.newPassword, Number(envVars.bcrypt_salt as string));
 
     await prisma.user.update({
         where: {
@@ -149,7 +149,7 @@ const resetPassword = async (token: string, payload: { id: string, password: str
     }
 
     // hash password
-    const password = await bcrypt.hash(payload.password, Number(5));
+    const password = await bcrypt.hash(payload.password, Number(envVars.bcrypt_salt as string));
 
     // update into database
     await prisma.user.update({
