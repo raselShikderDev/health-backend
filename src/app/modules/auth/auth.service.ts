@@ -11,6 +11,8 @@ import { IJWTPayload } from "../../types/common";
 
 
 const login = async (email:string, password:string) => {
+    console.log({email, password});
+    
 const existedUser = await prisma.user.findUniqueOrThrow({
     where:{
         email,
