@@ -23,16 +23,11 @@ const createPatient = async (req: Request) => {
     });
     req.body.patient.profilePhoto = uploadResult?.secure_url;
   }
-  console.log(req.body);
-  console.log({
-    pass: req.body.password,
-    salt: Number(envVars.bcrypt_salt as string),
-  });
-  // return req.body;
+ 
 
   const hasedPassword = await bcrypt.hash(
     req.body.password,
-    5
+    Number(envVars.bcrypt_salt as string)
     // Number(envVars.bcrypt_salt as string)
   );
   console.log("hasedPassword", hasedPassword);
@@ -59,7 +54,6 @@ const createPatient = async (req: Request) => {
   //     },
   //     "password": "Rasel70#@"
   // }
-
   return result;
 };
 
