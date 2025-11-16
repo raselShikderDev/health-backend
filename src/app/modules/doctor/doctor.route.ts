@@ -20,7 +20,7 @@ router.delete(
   authValidation(UserRole.ADMIN),
   doctorController.deleteDoctor
 );
-router.delete(
+router.patch(
   "/soft-delete/:id",
   authValidation(UserRole.ADMIN),
   doctorController.softdeleteDoctor
