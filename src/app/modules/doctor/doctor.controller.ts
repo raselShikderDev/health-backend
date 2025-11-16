@@ -52,7 +52,7 @@ const getDoctor = catchAsync(
   }
 );
 
-// get a doctor
+// delete a doctor
 const deleteDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     
@@ -62,6 +62,21 @@ const deleteDoctor = catchAsync(
       statusCode: 200,
       success: true,
       message: "Doctor successfully deleted",
+      data: result,
+    });
+  }
+);
+
+// softly delete a doctor
+const softdeleteDoctor = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    
+    const result = await doctorServices.softdeleteDoctor(req.params.id);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Doctor successfully soft deleted",
       data: result,
     });
   }
@@ -88,5 +103,6 @@ export const doctorController = {
   updateDoctor,
   getDoctor,
   deleteDoctor,
-  getAIsuggestions
+  getAIsuggestions,
+  softdeleteDoctor
 };
