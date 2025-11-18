@@ -7,7 +7,7 @@ import apiError from "../../errors/apiError";
 import httpStatus from "http-status"
 
 // creating slots
-const inserIntoDB = async (payload: any) => {
+const insertIntoDB = async (payload: any) => {
   const { startTime, endTime, startDate, endDate } = payload;
   const interalTime = 30; // in minutes
   console.log({ startTime, endTime, startDate, endDate });
@@ -113,11 +113,11 @@ const getSchedulesForDoctor = async (
       ],
     });
   }
-  const whereConditons: Prisma.ScheduleWhereInput =
+  const whereConditions: Prisma.ScheduleWhereInput =
     andConditions.length > 0
       ? {
-          AND: andConditions,
-        }
+        AND: andConditions,
+      }
       : {};
 
   const doctorSchedules = await prisma.doctorSchedules.findMany({
@@ -137,7 +137,7 @@ const getSchedulesForDoctor = async (
     skip,
     take: limit,
     where: {
-      ...whereConditons,
+      ...whereConditions,
       id: {
         notIn: doctorSchedulesId,
       },
@@ -149,7 +149,7 @@ const getSchedulesForDoctor = async (
   console.log("result", result);
   const total = await prisma.schedule.count({
     where: {
-      ...whereConditons,
+      ...whereConditions,
       id: {
         notIn: doctorSchedulesId,
       },
@@ -189,7 +189,7 @@ const getSchedule = async (id: string) => {
 };
 
 export const schedculeServices = {
-  inserIntoDB,
+  insertIntoDB,
   getSchedulesForDoctor,
   deleteScheduleFromDB,
   getSchedule

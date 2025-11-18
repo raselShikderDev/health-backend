@@ -7,9 +7,9 @@ import pick from "../../helpers/pick";
 import { IJWTPayload } from "../../types/common";
 
 // 
-const inserIntoDB = catchAsync(
+const insertIntoDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await schedculeServices.inserIntoDB(req.body);
+    const result = await schedculeServices.insertIntoDB(req.body);
 
     sendResponse(res, {
       statusCode: 201,
@@ -41,7 +41,7 @@ const getSchedulesForDoctor = catchAsync(
 // get a schedule for doctor
 const getSchedule = catchAsync(
   async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
-   
+
     const result = await schedculeServices.getSchedule(req.params.id);
 
     sendResponse(res, {
@@ -69,7 +69,7 @@ const deleteScheduleFromDB = catchAsync(
 );
 
 export const schedculeController = {
-  inserIntoDB,
+  insertIntoDB,
   getSchedulesForDoctor,
   deleteScheduleFromDB,
   getSchedule,

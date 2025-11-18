@@ -4,7 +4,7 @@ import sendResponse from "../../shared/sendResponse";
 import { doctorServices } from "./doctor.service";
 import pick from "../../helpers/pick";
 import { userFilteroptions } from "../user/user.constants";
-import { doctorFilterAbleField } from "./doctor.constrains";
+import { doctorFilterAbleField } from "./doctor.constants";
 
 // get doctors
 const getAllFromDB = catchAsync(
@@ -18,7 +18,7 @@ const getAllFromDB = catchAsync(
       success: true,
       message: "Doctor successfully retrived",
       data: result.data,
-      meta:result.meta
+      meta: result.meta
     });
   }
 );
@@ -26,7 +26,7 @@ const getAllFromDB = catchAsync(
 // update doctor
 const updateDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+
     const result = await doctorServices.updateDoctor(req.params.id, req.body);
     sendResponse(res, {
       statusCode: 200,
@@ -40,7 +40,7 @@ const updateDoctor = catchAsync(
 // get a doctor
 const getDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+
     const result = await doctorServices.getDoctor(req.params.id);
 
     sendResponse(res, {
@@ -55,7 +55,7 @@ const getDoctor = catchAsync(
 // delete a doctor
 const deleteDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+
     const result = await doctorServices.getDoctor(req.params.id);
 
     sendResponse(res, {
@@ -70,7 +70,7 @@ const deleteDoctor = catchAsync(
 // softly delete a doctor
 const softdeleteDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+
     const result = await doctorServices.softdeleteDoctor(req.params.id);
 
     sendResponse(res, {
@@ -86,7 +86,7 @@ const softdeleteDoctor = catchAsync(
 // get a doctor
 const getAIsuggestions = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+
     const result = await doctorServices.getAIsuggestions(req.body);
 
     sendResponse(res, {

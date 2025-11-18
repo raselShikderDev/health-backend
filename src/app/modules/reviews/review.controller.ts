@@ -7,29 +7,29 @@ import pick from "../../helpers/pick";
 import { userFilterAbleFeild, userFilteroptions } from "../user/user.constants";
 import { reviewService } from "./review.service";
 
-const createReview = catchAsync(async (req: Request &{user?:IJWTPayload}, res: Response) => {
-    const result = await reviewService.createReview(req.user as IJWTPayload, req.body);
+const createReview = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
+  const result = await reviewService.createReview(req.user as IJWTPayload, req.body);
 
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Review created successfully!",
-      data: result,
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Review created successfully!",
+    data: result,
+  });
+}
 );
 
 const getMyReview = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
-    const filters = pick(req.query ?? {}, ["status", "paymentStatus"])
-    const options = pick(req.query ?? {}, ["status", "role", "email", "searchTerm"])
-    const result = await reviewService.getMyReview(req.user as IJWTPayload, options, filters);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Review data fetched successfully',
-        data: result,
-        // meta: result.meta,
-    });
+  const filters = pick(req.query ?? {}, ["status", "paymentStatus"])
+  const options = pick(req.query ?? {}, ["status", "role", "email", "searchTerm"])
+  const result = await reviewService.getMyReview(req.user as IJWTPayload, options, filters);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Review data fetched successfully',
+    data: result,
+    // meta: result.meta,
+  });
 });
 
 const getAllReview = catchAsync(
@@ -45,10 +45,10 @@ const getAllReview = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       message: "Review data fetched successfully",
-     data: result,
-        // meta: result.meta,
+      data: result,
+      // meta: result.meta,
     });
-});
+  });
 
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -63,19 +63,19 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
 
 const updateReviewStatus = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
 
-    const result = await reviewService.getMyReview(req.user as IJWTPayload, req.body, req.params.id);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Review successfully updated',
-        data: result,
-    });
+  const result = await reviewService.getMyReview(req.user as IJWTPayload, req.body, req.params.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Review successfully updated',
+    data: result,
+  });
 });
 
 export const reviewController = {
-    createReview,
-    getAllReview,
-    deleteReview,
-    getMyReview,
-    updateReviewStatus,
+  createReview,
+  getAllReview,
+  deleteReview,
+  getMyReview,
+  updateReviewStatus,
 };

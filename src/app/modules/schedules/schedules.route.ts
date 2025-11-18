@@ -8,7 +8,7 @@ import { UserRole } from "@prisma/client";
 const router = Router()
 
 router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR), schedculeController.getSchedulesForDoctor)
-router.post("/", authValidation(UserRole.ADMIN,), validateRequest(createScheduleSchema), schedculeController.inserIntoDB)
+router.post("/", authValidation(UserRole.ADMIN,), validateRequest(createScheduleSchema), schedculeController.insertIntoDB)
 router.post("/:id", authValidation(UserRole.ADMIN,), validateRequest(createScheduleSchema), schedculeController.getSchedule)
 router.delete("/:id", authValidation(UserRole.ADMIN), schedculeController.deleteScheduleFromDB)
 

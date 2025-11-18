@@ -8,6 +8,7 @@ enum UserStatus {
     ACTIVE
     INACTIVE
     DELETED
+    BLOCKED
 }
 
 enum Gender {

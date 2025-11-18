@@ -4,11 +4,11 @@ import { prisma } from "../../shared/pirsmaConfig";
 import * as bcrypt from "bcrypt";
 import { fileUploader } from "../../helpers/fileUploadByMulter";
 import { pagginationHelper } from "../../helpers/pagginationHelper";
-import { Prisma, UserRole, UserStatus } from "@prisma/client";
-import { userSearchAbleFeilds } from "./user.constants";
+import { Doctor, Prisma, UserRole, UserStatus } from "@prisma/client";
 import { IJWTPayload } from "../../types/common";
 import { tr } from "zod/v4/locales";
 import { email } from "zod";
+import { userSearchAbleFeilds } from "./user.constants";
 
 // Create Patient
 const createPatient = async (req: Request) => {
@@ -58,63 +58,91 @@ const createPatient = async (req: Request) => {
 };
 
 // Create Doctor
-const createDoctor = async (req: Request) => {
-  // If file exists then upload to cloudinary
-  if (!req.file) {
-    console.log("file not exists");
-  }
-  if (req.file) {
-    const uploadResult = await fileUploader.uploadToCloudinary(req.file);
-    console.log({
-      uploadResult: uploadResult?.secure_url as string,
-    });
-    req.body.doctor.profilePhoto = uploadResult?.secure_url;
-  }
-  console.log(req.body);
-  console.log({
-    pass: req.body.password,
-    salt: Number(envVars.bcrypt_salt as string),
-  });
-  // return req.body;
+const createDoctor = async (req: Request): Promise<Doctor> => {
+  const file = req.file;
 
-  const hasedPassword = await bcrypt.hash(
+  if (file) {
+    const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
+    req.body.doctor.profilePhoto = uploadToCloudinary?.secure_url;
+  }
+
+  const hashedPassword: string = await bcrypt.hash(
     req.body.password,
-    10
-    // Number(envVars.bcrypt_salt as string)
+    Number(envVars.bcrypt_salt as string)
   );
-  console.log("hasedPassword", hasedPassword);
 
-  // Creating user and doctor
-  const result = await prisma.$transaction(async (trans: any) => {
-    await trans.user.create({
-      data: {
-        email: req.body.doctor?.email,
-        password: hasedPassword,
-        role: UserRole.DOCTOR,
+  const userData = {
+    email: req.body.doctor.email,
+    password: hashedPassword,
+    role: UserRole.DOCTOR,
+  };
+
+  // Extract specialties from doctor data
+  const { specialties, ...doctorData } = req.body.doctor;
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    // Step 1: Create user
+    await transactionClient.user.create({
+      data: userData,
+    });
+
+    // Step 2: Create doctor
+    const createdDoctorData = await transactionClient.doctor.create({
+      data: doctorData,
+    });
+
+    // Step 3: Create doctor specialties if provided
+    if (specialties && Array.isArray(specialties) && specialties.length > 0) {
+      // Verify all specialties exist
+      const existingSpecialties = await transactionClient.specialties.findMany({
+        where: {
+          id: {
+            in: specialties,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const existingSpecialtyIds = existingSpecialties.map((s) => s.id);
+      const invalidSpecialties = specialties.filter(
+        (id) => !existingSpecialtyIds.includes(id)
+      );
+
+      if (invalidSpecialties.length > 0) {
+        throw new Error(
+          `Invalid specialty IDs: ${invalidSpecialties.join(", ")}`
+        );
+      }
+
+      // Create doctor specialties relations
+      const doctorSpecialtiesData = specialties.map((specialtyId) => ({
+        doctorId: createdDoctorData.id,
+        specialitiesId: specialtyId,
+      }));
+
+      await transactionClient.doctorSpecialties.createMany({
+        data: doctorSpecialtiesData,
+      });
+    }
+
+    // Step 4: Return doctor with specialties
+    const doctorWithSpecialties = await transactionClient.doctor.findUnique({
+      where: {
+        id: createdDoctorData.id,
+      },
+      include: {
+        doctorSpecialties: {
+          include: {
+            specialities: true,
+          },
+        },
       },
     });
-    return await trans.doctor.create({
-      data: req.body.doctor,
-    });
-  });
-  console.log("result in service of doctor", result);
 
-  //   {
-  //   "password": "StrongPassword123!",
-  //   "doctor": {
-  //     "name": "Dr. John Doe",
-  //     "email": "johndoe@example.com",
-  //     "contactNumber": "1234567890",
-  //     "address": "123 Medical Street, City, Country",
-  //     "registrationNumber": "REG-456789",
-  //     "experience": 10,
-  //     "gender": "MALE",
-  //     "appointmentFee": 50,
-  //     "qualification": "MBBS, MD",
-  //     "currentWorkingPlace": "City Hospital",
-  //     "designation": "Senior Consultant"
-  //   }
-  // }
+    return doctorWithSpecialties!;
+  });
 
   return result;
 };
@@ -179,7 +207,7 @@ const getAllFromDB = async (params: any, options: any) => {
 
   const andConditions: Prisma.UserWhereInput[] = [];
 
-  const whereConditons: Prisma.UserWhereInput =
+  const whereConditions: Prisma.UserWhereInput =
     andConditions.length > 0
       ? {
           AND: andConditions,
@@ -210,13 +238,13 @@ const getAllFromDB = async (params: any, options: any) => {
   const result = await prisma.user.findMany({
     skip,
     take: limit,
-    where: whereConditons,
+    where: whereConditions,
     orderBy: {
       [sortBy]: sortOrder,
     },
   });
   const total = await prisma.user.count({
-    where: whereConditons,
+    where: whereConditions,
   });
   return {
     meta: {
