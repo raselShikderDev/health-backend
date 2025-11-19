@@ -4,13 +4,13 @@ import sendResponse from "../../shared/sendResponse";
 import pick from "../../helpers/pick";
 import { userFilteroptions } from "../user/user.constants";
 import { patientServices } from "./patient.service";
-import { patientFilterAbleField } from "./patient.constrains";
 import { IJWTPayload } from "../../types/common";
+import { patientFilterableFields } from "./patient.constants";
 
 // get Patients
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const filters = pick(req.query ?? {}, patientFilterAbleField);
+    const filters = pick(req.query ?? {}, patientFilterableFields);
     const options = pick(req.query ?? {}, userFilteroptions);
     const result = await patientServices.getAllFromDB(filters, options);
 
