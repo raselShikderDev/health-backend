@@ -18,7 +18,12 @@ router.patch(
 router.delete(
   "/:id",
   authValidation(UserRole.ADMIN),
-  doctorController.updateDoctor
+  doctorController.deleteDoctor
+);
+router.patch(
+  "/soft-delete/:id",
+  authValidation(UserRole.ADMIN),
+  doctorController.softdeleteDoctor
 );
 router.post(
   "/ai-suggestion",

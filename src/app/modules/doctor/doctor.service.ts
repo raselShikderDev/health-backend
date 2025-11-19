@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Doctor, Prisma, UserStatus } from "@prisma/client";
 import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import { prisma } from "../../shared/pirsmaConfig";
 import { doctorSearchAbleFeild } from "./doctor.constrains";
@@ -231,10 +231,33 @@ Return your response in JSON format with full individual doctor data.
   // }
 };
 
+const softdeleteDoctor = async (id: string): Promise<Doctor> => {
+    return await prisma.$transaction(async (transactionClient) => {
+        const deleteDoctor = await transactionClient.doctor.update({
+            where: { id },
+            data: {
+                isDeleted: true,
+            },
+        });
+
+        await transactionClient.user.update({
+            where: {
+                email: deleteDoctor.email,
+            },
+            data: {
+                status: UserStatus.DELETED,
+            },
+        });
+
+        return deleteDoctor;
+    });
+};
+
 export const doctorServices = {
   getAllFromDB,
   updateDoctor,
   getDoctor,
   deleteDoctor,
   getAIsuggestions,
+  softdeleteDoctor
 };
