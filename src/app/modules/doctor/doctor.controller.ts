@@ -4,13 +4,13 @@ import sendResponse from "../../shared/sendResponse";
 import { doctorServices } from "./doctor.service";
 import pick from "../../helpers/pick";
 import { userFilteroptions } from "../user/user.constants";
-import { doctorFilterAbleField } from "./doctor.constrains";
+import { doctorFilterableFields, doctorSearchableFields } from "./doctor.constrains";
 
 // get doctors
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const filters = pick(req.query ?? {}, doctorFilterAbleField)
-    const options = pick(req.query ?? {}, userFilteroptions)
+    const filters = pick(req.query ?? {}, doctorFilterableFields)
+    const options = pick(req.query ?? {}, doctorSearchableFields)
     const result = await doctorServices.getAllFromDB(filters, options);
 
     sendResponse(res, {
