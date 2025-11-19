@@ -53,7 +53,7 @@ const createDoctor = z.object({
     // NEW: Add specialties array for doctor creation
     specialties: z
       .array(
-        z.string().uuid({
+        z.uuid({
           message: "Each specialty must be a valid UUID",
         })
       )

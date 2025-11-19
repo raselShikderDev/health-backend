@@ -31,7 +31,7 @@ router.post(
   fileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body?.data) {
-      req.body = userValidation.createPatientValidationSchema.parse(
+      req.body = userValidation.createPatient.parse(
         JSON.parse(req.body.data)
       );
     }
@@ -47,7 +47,7 @@ router.post(
   // authValidation(UserRole.ADMIN),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body?.data) {
-      req.body = userValidation.createDoctorValidationSchema.parse(
+      req.body = userValidation.createDoctor.parse(
         JSON.parse(req.body.data)
       );
     }
@@ -63,7 +63,7 @@ router.post(
   authValidation(UserRole.ADMIN),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body?.data) {
-      req.body = userValidation.createAdminValidationSchema.parse(
+      req.body = userValidation.createAdmin.parse(
         JSON.parse(req.body.data)
       );
     }
