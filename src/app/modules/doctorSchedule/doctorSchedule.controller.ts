@@ -8,7 +8,7 @@ import { userFilteroptions } from "../user/user.constants";
 
 // Creat doctor schedules
 const createDoctorSchedules = catchAsync(
-  async (req: Request &{user?:IJWTPayload}, res: Response, next: NextFunction) => {
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
     const result = await doctorScheduleServices.createDoctorSchedules(req.user as IJWTPayload, req.body);
 
     sendResponse(res, {
@@ -21,8 +21,8 @@ const createDoctorSchedules = catchAsync(
 );
 // Creat doctor schedules
 const myDoctorAllSchedules = catchAsync(
-  async (req: Request &{user?:IJWTPayload}, res: Response, next: NextFunction) => {
-        const options = pick(req.query ?? {}, userFilteroptions);
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
+    const options = pick(req.query ?? {}, userFilteroptions);
 
     const result = await doctorScheduleServices.myDoctorAllSchedules(req.user as IJWTPayload, options);
 
@@ -36,7 +36,7 @@ const myDoctorAllSchedules = catchAsync(
 );
 // Creat doctor schedules
 const getAllDoctorSchedules = catchAsync(
-  async (req: Request &{user?:IJWTPayload}, res: Response, next: NextFunction) => {
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
     const options = pick(req.query ?? {}, userFilteroptions);
 
     const result = await doctorScheduleServices.getAllDoctorSchedules(req.user as IJWTPayload, options);
@@ -53,7 +53,7 @@ const getAllDoctorSchedules = catchAsync(
 
 // delete doctor schedules
 const deleteDoctorSchedules = catchAsync(
-  async (req: Request &{user?:IJWTPayload}, res: Response, next: NextFunction) => {
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
     const result = await doctorScheduleServices.deleteDoctorSchedules(req.user as IJWTPayload, req.params.id);
 
     sendResponse(res, {

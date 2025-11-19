@@ -31,6 +31,19 @@ const envVars = {
     access_expires:process.env.JWT_ACCESS_EXPIRES,
     refresh_secret:process.env.JWT_REFRESH_SECRET,
     refresh_expires:process.env.JWT_REFRESH_EXPIRES,
-  }
+  },
+  SSL: {
+      SSL_VALIDATION_API: process.env.SSL_VALIDATION_API,
+      SSL_PAYMENT_API: process.env.SSL_PAYMENT_API,
+      SSL_SECRET_KEY: process.env.SSL_SECRET_KEY,
+      SSL_STORE_ID: process.env.SSL_STORE_ID,
+      SSL_SUCCESS_BACKEND_URL: process.env.SSL_SUCCESS_BACKEND_URL,
+      SSL_FAIL_BACKEND_URL: process.env.SSL_FAIL_BACKEND_URL,
+      SSL_CANCEL_BACKEND_URL: process.env.SSL_CANCEL_BACKEND_URL,
+      SSL_SUCCESS_FRONTEND_URL: process.env.SSL_SUCCESS_FRONTEND_URL,
+      SSL_FAIL_FRONTEND_URL: process.env.SSL_FAIL_FRONTEND_URL,
+      SSL_CANCEL_FRONTEND_URL: process.env.SSL_CANCEL_FRONTEND_URL,
+      SSL_IPN_URL:process.env.SSL_IPN_URL,
+    },
 };
 export default envVars;

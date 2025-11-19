@@ -7,29 +7,29 @@ import { IJWTPayload } from "../../types/common";
 import pick from "../../helpers/pick";
 import { userFilterAbleFeild } from "../user/user.constants";
 
-const createAppointment = catchAsync(async (req: Request &{user?:IJWTPayload}, res: Response) => {
-    const result = await appointmentService.createAppointment(req.user as IJWTPayload, req.body);
+const createAppointment = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
+  const result = await appointmentService.createAppointment(req.user as IJWTPayload, req.body);
 
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Appoinment created successfully!",
-      data: result,
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Appoinment created successfully!",
+    data: result,
+  });
+}
 );
 
 const getMyAppointment = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
-    const filters = pick(req.query ?? {}, ["status", "paymentStatus"])
-    const options = pick(req.query ?? {}, ["status", "role", "email", "searchTerm"])
-    const result = await appointmentService.getMyAppointment(req.user as IJWTPayload, options, filters);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Appoinment data fetched successfully',
-        data: result.data,
-        meta: result.meta,
-    });
+  const filters = pick(req.query ?? {}, ["status", "paymentStatus"])
+  const options = pick(req.query ?? {}, ["status", "role", "email", "searchTerm"])
+  const result = await appointmentService.getMyAppointment(req.user as IJWTPayload, options, filters);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Appoinment data fetched successfully',
+    data: result.data,
+    meta: result.meta,
+  });
 });
 
 const getAllAppointment = catchAsync(
@@ -48,7 +48,7 @@ const getAllAppointment = catchAsync(
       data: result.data,
       meta: result.meta,
     });
-});
+  });
 
 const getAllDoctorAppointment = catchAsync(
   async (req: Request & { user?: IJWTPayload }, res: Response) => {
@@ -66,7 +66,7 @@ const getAllDoctorAppointment = catchAsync(
       data: result.data,
       meta: result.meta,
     });
-});
+  });
 
 const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -81,20 +81,20 @@ const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
 
 const updateAppointmentStatus = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
 
-    const result = await appointmentService.getMyAppointment(req.user as IJWTPayload, req.body, req.params.id);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Appoinment successfully updated',
-        data: result,
-    });
+  const result = await appointmentService.getMyAppointment(req.user as IJWTPayload, req.body, req.params.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Appoinment successfully updated',
+    data: result,
+  });
 });
 
 export const appointmentController = {
-    createAppointment,
-    getAllAppointment,
-    deleteAppointment,
-    getMyAppointment,
-    updateAppointmentStatus,
-    getAllDoctorAppointment
+  createAppointment,
+  getAllAppointment,
+  deleteAppointment,
+  getMyAppointment,
+  updateAppointmentStatus,
+  getAllDoctorAppointment
 };

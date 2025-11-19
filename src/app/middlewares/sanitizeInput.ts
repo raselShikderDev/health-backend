@@ -1,0 +1,59 @@
+import { NextFunction, Request, Response } from "express";
+
+/**
+ * Middleware to trim string inputs and remove potentially harmful characters
+ */
+export const sanitizeInput = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // Sanitize body
+  if (req.body) {
+    req.body = sanitizeObject(req.body);
+  }
+
+  // Sanitize query
+  if (req.query) {
+    req.query = sanitizeObject(req.query);
+  }
+
+  // Sanitize params
+  if (req.params) {
+    req.params = sanitizeObject(req.params);
+  }
+
+  next();
+};
+
+const sanitizeObject = (obj: any): any => {
+  if (typeof obj !== "object" || obj === null) {
+    return sanitizeValue(obj);
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeObject);
+  }
+
+  const sanitized: any = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      sanitized[key] = sanitizeObject(obj[key]);
+    }
+  }
+  return sanitized;
+};
+
+const sanitizeValue = (value: any): any => {
+  if (typeof value === "string") {
+    // Trim whitespace
+    value = value.trim();
+
+    // Remove null bytes
+    value = value.replace(/\0/g, "");
+
+    // HTML encode dangerous characters (optional - depends on use case)
+    // value = value.replace(/[<>]/g, '');
+  }
+  return value;
+};

@@ -9,9 +9,9 @@ import { userFilterAbleFeild, userFilteroptions } from "../user/user.constants";
 
 
 
-const createPrescription = catchAsync(async (req: Request &{user?:IJWTPayload}, res: Response) => {
+const createPrescription = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
 
-   
+
     const result = await prescriptionsService.createPrescription(req.user as IJWTPayload, req.body);
 
     sendResponse(res, {
@@ -23,9 +23,9 @@ const createPrescription = catchAsync(async (req: Request &{user?:IJWTPayload}, 
 });
 
 
-const myPrescription = catchAsync(async (req: Request &{user?:IJWTPayload}, res: Response) => {
+const myPrescription = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
 
-const options = pick(req.query, userFilteroptions)
+    const options = pick(req.query, userFilteroptions)
     const result = await prescriptionsService.myPrescription(req.user as IJWTPayload, options);
 
     sendResponse(res, {
@@ -33,7 +33,7 @@ const options = pick(req.query, userFilteroptions)
         success: true,
         message: 'Prescription data successfully retrived',
         data: result.data,
-      meta:result.meta
+        meta: result.meta
     });
 });
 

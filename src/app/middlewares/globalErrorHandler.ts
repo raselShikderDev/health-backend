@@ -1,8 +1,18 @@
 import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
-import apiError from "../errors/apiError";
 import { ZodError } from "zod";
+
+const sanitizeError = (error: any) => {
+    // Don't expose Prisma errors in production
+    if (process.env.NODE_ENV === "production" && error.code?.startsWith("P")) {
+        return {
+            message: "Database operation failed",
+            errorDetails: null,
+        };
+    }
+    return error;
+};
 
 const globalErrorHandler = (
   err: any,

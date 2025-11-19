@@ -12,8 +12,13 @@ import { prescriptionsRoute } from "../modules/prescriptions/prescriptions.route
 import { reviewRoutes } from "../modules/reviews/review.routes";
 import { paymentRoute } from "../modules/payment/payment.route";
 import { metaRoute } from "../modules/meta/meta.route";
+import { apiLimiter } from "../middlewares/rateLimiter";
 
 const router = express.Router();
+
+
+router.use(apiLimiter);
+
 
 const moduleRoutes = [
   {

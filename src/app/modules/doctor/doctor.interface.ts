@@ -1,20 +1,24 @@
-import { Gender } from "@prisma/client";
 
-export type IDoctorUpdateInput ={
-    name?: string;
-    email?: string;
-    contactNumber?: string;
-    address?: string;
-    registrationNumber?: string;
-    experience?: number;
-    gender?: Gender;
-    appointmentFee?: number;
-    qualification?: string;
-    currentWorkingPlace?: string;
-    designation?: string;
-    isDeleted?: boolean;
-    specialties?:{
-        specialitiesId?:string;
-        isDeleted?:boolean
-    }[]
-}
+export type IDoctorFilterRequest = {
+  searchTerm?: string | undefined;
+  email?: string | undefined;
+  contactNumber?: string | undefined;
+  gender?: string | undefined;
+  specialties?: string | undefined;
+};
+
+export type IDoctorUpdate = {
+  name?: string;
+  profilePhoto?: string;
+  contactNumber?: string;
+  address?: string;
+  registrationNumber?: string;
+  experience?: number;
+  gender?: "MALE" | "FEMALE";
+  appointmentFee?: number;
+  qualification?: string;
+  currentWorkingPlace?: string;
+  designation?: string;
+  specialties?: string[];
+  removeSpecialties?: string[];
+};

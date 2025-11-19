@@ -2,8 +2,12 @@ import { Router } from "express";
 import { authcontroller } from "./auth.controller";
 import { UserRole } from "@prisma/client";
 import { authValidation } from "../../middlewares/authValidation";
+import { authLimiter } from "../../middlewares/rateLimiter";
 
 const router = Router()
+
+router.post("/login", authLimiter, authcontroller.login);
+
 
 router.get(
     "/me",
