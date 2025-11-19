@@ -1,59 +1,89 @@
 import { Patient, Prisma } from "@prisma/client";
 import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import { prisma } from "../../shared/pirsmaConfig";
-import { patientSearchAbleFeild } from "./patient.constrains";
 import { IJWTPayload } from "../../types/common";
+import { IPatientFilterRequest } from "./patient.interface";
+import { IPaginationOptions } from "../../interfaces/pagination";
+import { patientSearchableFields } from "./patient.constants";
 
-const getAllFromDB = async (filters: any, options: IOptions) => {
-  const { page, limit, skip, sortBy, sortOrder } =
-    pagginationHelper.calculatePaggination(options);
+const getAllFromDB = async (
+  filters: IPatientFilterRequest,
+  options: IPaginationOptions,
+  includeHealthData: boolean = false // NEW PARAMETER
+) => {
+  const { limit, page, skip } = pagginationHelper.calculatePaggination(options);
   const { searchTerm, ...filterData } = filters;
 
-  const andConditions: Prisma.PatientWhereInput[] = [];
+  const andConditions = [];
 
   if (searchTerm) {
     andConditions.push({
-      OR: patientSearchAbleFeild.map((feild) => ({
-        [feild]: {
+      OR: patientSearchableFields.map((field:any) => ({
+        [field]: {
           contains: searchTerm,
           mode: "insensitive",
         },
       })),
     });
   }
+
   if (Object.keys(filterData).length > 0) {
-    const filterConditions = Object.keys(filterData).map((key) => ({
-      [key]: {
-        equals: (filterData as any)[key],
-      },
-    }));
-    andConditions.push(...filterConditions);
+    andConditions.push({
+      AND: Object.keys(filterData).map((key) => {
+        return {
+          [key]: {
+            equals: (filterData as any)[key],
+          },
+        };
+      }),
+    });
   }
+
+  andConditions.push({
+    isDeleted: false,
+  });
 
   const whereConditions: Prisma.PatientWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
+  // Conditional include based on parameter
+  const includeClause = includeHealthData
+    ? {
+        medicalReport: true,
+        patientHealthData: true,
+      }
+    : {
+        medicalReport: {
+          select: {
+            id: true,
+            reportName: true,
+            createdAt: true,
+          },
+        },
+      };
+
   const result = await prisma.patient.findMany({
+    where: whereConditions,
     skip,
     take: limit,
-    where: whereConditions,
-    include: {
-      user: {
-        include: {
-          doctor: true,
-        },
-      },
-    },
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : {
+            createdAt: "desc",
+          },
+    include: includeClause,
   });
+
   const total = await prisma.patient.count({
     where: whereConditions,
   });
 
   return {
     meta: {
+      total,
       page,
       limit,
-      total,
     },
     data: result,
   };
@@ -104,8 +134,8 @@ const updatePatient = async (user: IJWTPayload, payload: any) => {
         id:existingPatient.id
       },
       include:{
-        medicalReports:true,
-        matientHealthData:true,
+        medicalReport:true,
+        patientHealthData:true,
       }
     })
 

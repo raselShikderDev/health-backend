@@ -2,6 +2,8 @@ import { Request } from "express";
 import { fileUploader } from "../../helpers/fileUploadByMulter";
 import { prisma } from "../../shared/pirsmaConfig";
 import { Specialties } from "@prisma/client";
+import { pagginationHelper } from "../../helpers/pagginationHelper";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
 const insertIntoDB = async (req: Request) => {
   const file = req.file;
@@ -28,8 +30,28 @@ const insertIntoDB = async (req: Request) => {
   return result;
 };
 
-const getAllFromDB = async (): Promise<Specialties[]> => {
-  return await prisma.specialties.findMany();
+const getAllFromDB = async (options: IPaginationOptions) => {
+  const { limit, page, skip } = pagginationHelper.calculatePaggination(options);
+
+  const result = await prisma.specialties.findMany({
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { createdAt: "desc" },
+  });
+
+  const total = await prisma.specialties.count();
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
 };
 
 const deleteFromDB = async (id: string): Promise<Specialties> => {

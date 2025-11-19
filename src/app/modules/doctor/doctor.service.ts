@@ -5,8 +5,9 @@ import apiError from "../../errors/apiError";
 import httpstatus from "http-status";
 import { openai } from "../../helpers/opeRouterConfig";
 import { extractJsonFromMessage } from "../../helpers/extractAgentMessage";
-import { IDoctorUpdate } from "./doctor.interface";
-import { doctorFilterableFields } from "./doctor.constants";
+import { IDoctorFilterRequest, IDoctorUpdate } from "./doctor.interface";
+import { doctorFilterableFields, doctorSearchableFields } from "./doctor.constrains";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
 const getAllFromDB = async (filters: any, options: IOptions) => {
   const { page, limit, skip, sortBy, sortOrder } =
@@ -334,11 +335,123 @@ const softdeleteDoctor = async (id: string): Promise<Doctor> => {
   });
 };
 
+const getAllPublic = async (
+  filters: IDoctorFilterRequest,
+  options: IPaginationOptions
+) => {
+  const { limit, page, skip } = pagginationHelper.calculatePaggination(options);
+  const { searchTerm, specialties, ...filterData } = filters;
+
+  const andConditions: Prisma.DoctorWhereInput[] = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      OR: doctorSearchableFields.map((field) => ({
+        [field]: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (specialties && specialties.length > 0) {
+    andConditions.push({
+      doctorSpecialties: {
+        some: {
+          specialities: {
+            title: {
+              contains: specialties,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.keys(filterData).map((key) => ({
+      [key]: {
+        equals: (filterData as any)[key],
+      },
+    }));
+    andConditions.push(...filterConditions);
+  }
+
+  andConditions.push({
+    isDeleted: false,
+  });
+
+  const whereConditions: Prisma.DoctorWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = await prisma.doctor.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { avarageRating: "desc" },
+    select: {
+      id: true,
+      name: true,
+      // email: false, // Hide email in public API
+      profilePhoto: true,
+      contactNumber: true,
+      address: true,
+      registrationNumber: true,
+      experience: true,
+      gender: true,
+      appointmentFee: true,
+      qualification: true,
+      currentWorkingPlace: true,
+      designation: true,
+      avarageRating: true,
+      createdAt: true,
+      updatedAt: true,
+      doctorSpecialties: {
+        include: {
+          specialities: true,
+        },
+      },
+      reviews: {
+        select: {
+          rating: true,
+          comment: true,
+          createdAt: true,
+          patient: {
+            select: {
+              name: true,
+              profilePhoto: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const total = await prisma.doctor.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
+};
+
 export const doctorServices = {
   getAllFromDB,
   updateDoctor,
   getDoctor,
   deleteDoctor,
   getAIsuggestions,
-  softdeleteDoctor
+  softdeleteDoctor,
+  getAllPublic,
 };

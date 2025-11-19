@@ -8,6 +8,7 @@ import { paymentController } from "./app/modules/payment/payment.controller";
 import cron from "node-cron";
 import { appointmentService } from "./app/modules/appoinments/appoinments.service";
 import envVars from "./config/envVars";
+import { sanitizeInput } from "./app/middlewares/sanitizeInput";
 
 const app: Application = express();
 
@@ -28,6 +29,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(sanitizeInput);
 
 cron.schedule("* * * * *", () => {
   try {

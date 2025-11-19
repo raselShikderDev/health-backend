@@ -4,7 +4,7 @@ import sendResponse from "../../shared/sendResponse";
 import { doctorServices } from "./doctor.service";
 import pick from "../../helpers/pick";
 import { userFilteroptions } from "../user/user.constants";
-import { doctorFilterAbleField } from "./doctor.constants";
+import { doctorFilterAbleField } from "./doctor.constrains";
 
 // get doctors
 const getAllFromDB = catchAsync(
