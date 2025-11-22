@@ -6,7 +6,10 @@ import httpstatus from "http-status";
 import { openai } from "../../helpers/opeRouterConfig";
 import { extractJsonFromMessage } from "../../helpers/extractAgentMessage";
 import { IDoctorFilterRequest, IDoctorUpdate } from "./doctor.interface";
-import { doctorFilterableFields, doctorSearchableFields } from "./doctor.constrains";
+import {
+  doctorFilterableFields,
+  doctorSearchableFields,
+} from "./doctor.constrains";
 import { IPaginationOptions } from "../../interfaces/pagination";
 
 const getAllFromDB = async (filters: any, options: IOptions) => {
@@ -65,12 +68,24 @@ const getAllFromDB = async (filters: any, options: IOptions) => {
       [sortBy]: sortOrder,
     },
     include: {
-      reviews: true
-    }
+      reviews: true,
+      doctorSpecialties: {
+        include: {
+          specialities:{
+            select:{
+              title:true
+            }
+          },
+        },
+      },
+    },
   });
   const total = await prisma.doctor.count({
     where: whereConditions,
   });
+
+  console.log({ result });
+
   return {
     meta: {
       page,
@@ -225,25 +240,25 @@ const getDoctor = async (id: string) => {
   return await prisma.doctor.findUniqueOrThrow({
     where: {
       id,
-      isDeleted: false
+      isDeleted: false,
     },
     include: {
       doctorSpecialties: {
         include: {
-          specialities: true
-        }
+          specialities: true,
+        },
       },
       doctorSchedules: {
         include: {
-          schedule: true
-        }
+          schedule: true,
+        },
       },
       reviews: {
         select: {
-          rating: true
-        }
-      }
-    }
+          rating: true,
+        },
+      },
+    },
   });
 };
 
