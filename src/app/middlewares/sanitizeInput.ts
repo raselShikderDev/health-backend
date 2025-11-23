@@ -69,9 +69,16 @@ export const sanitizeInput = (
   next: NextFunction
 ) => {
   // Sanitize body
-  if (req.body) {
-    req.body = sanitizeObject(req.body.data);
+
+  console.log({ "in sanitizer 73 - Req.body:": req.body });
+
+  if (req?.body?.data) {
+    req.body = sanitizeObject(req?.body?.data);
   }
+  if (req?.body) {
+    req.body = sanitizeObject(req?.body);
+  }
+  console.log({ "in sanitizer 78 - Req.body:": req.body });
 
   // Sanitize query (cannot reassign because it's a getter → mutate instead)
   if (req.query) {
