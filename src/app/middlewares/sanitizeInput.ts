@@ -58,8 +58,6 @@
 //   return value;
 // };
 
-
-
 import { NextFunction, Request, Response } from "express";
 
 /**
@@ -72,7 +70,7 @@ export const sanitizeInput = (
 ) => {
   // Sanitize body
   if (req.body) {
-    req.body = sanitizeObject(req.body);
+    req.body = sanitizeObject(req.body.data);
   }
 
   // Sanitize query (cannot reassign because it's a getter → mutate instead)
