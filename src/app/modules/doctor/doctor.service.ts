@@ -71,10 +71,10 @@ const getAllFromDB = async (filters: any, options: IOptions) => {
       reviews: true,
       doctorSpecialties: {
         include: {
-          specialities:{
-            select:{
-              title:true
-            }
+          specialities: {
+            select: {
+              title: true,
+            },
           },
         },
       },
@@ -99,6 +99,7 @@ const getAllFromDB = async (filters: any, options: IOptions) => {
 // Doctor update
 const updateDoctor = async (id: string, payload: IDoctorUpdate) => {
   const { specialties, removeSpecialties, ...doctorData } = payload;
+  const updatedData = { ...doctorData };
 
   const doctorInfo = await prisma.doctor.findUniqueOrThrow({
     where: {
@@ -114,7 +115,7 @@ const updateDoctor = async (id: string, payload: IDoctorUpdate) => {
         where: {
           id,
         },
-        data: doctorData,
+        data: updatedData,
       });
     }
 
